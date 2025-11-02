@@ -1,8 +1,8 @@
-# -----------------------------------------------------
-# 🌸 XPATHY SERVER - Java + Spring Boot + GUI Project
-# -----------------------------------------------------
+# =====================================================
+# 🌸 XPATHY SERVER - Spring Boot + Java Swing GUI
+# =====================================================
 
-# --- OS files ---
+# --- OS & System Files ---
 .DS_Store
 Thumbs.db
 ehthumbs.db
@@ -20,10 +20,6 @@ out/
 .settings/
 bin/
 
-# VS Code
-.vscode/
-.history/
-
 # NetBeans
 nbproject/private/
 build/
@@ -31,6 +27,13 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+# VS Code
+.vscode/
+.history/
+
+# JetBrains Fleet
+.fleet/
 
 # --- Build Tools ---
 # Maven
@@ -42,10 +45,8 @@ target/
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-# --- Logs & temp ---
+# --- Logs & Temp ---
 logs/
 *.log
 *.tmp
@@ -54,23 +55,7 @@ logs/
 *.swo
 *.orig
 
-# --- Dependencies ---
-# Common dependency directories
-lib/
-libs/
-dependency-reduced-pom.xml
-
-# --- Environment / Credentials ---
-.env
-*.env
-application-*.yml
-application-*.properties
-secret.yml
-secret.properties
-credentials.json
-config/local/
-
-# --- Java compiled files ---
+# --- Java Compiled Files ---
 *.class
 *.jar
 *.war
@@ -80,58 +65,95 @@ config/local/
 *.tar.gz
 *.rar
 
-# --- GUI / JavaFX resources ---
+# --- GUI / Swing Cache ---
 *.db
 *.sqlite
-*.der
-*.crt
-*.pem
-*.keystore
-*.jks
-*.p12
-*.key
-
-# --- OS temp files ---
-*.tmp
-*.temp
-*.bak
+*.ser
+*.lck
+*.lock
 *.swp
 
-# --- Misc ---
-node_modules/
-package-lock.json
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# --- Local Configuration ---
+.env
+*.env
+application-*.yml
+application-*.properties
+secret.yml
+secret.properties
+config/local/
+config/dev/
+config/test/
 
-# --- JetBrains Fleet ---
-.fleet/
+# --- Keystores & Certificates ---
+*.jks
+*.p12
+*.keystore
+*.pem
+*.crt
+*.der
+*.key
 
-# --- Backup & others ---
-*.bak
-*.old
-*.orig
+# --- Dependencies / Vendor ---
+lib/
+libs/
+dependency-reduced-pom.xml
 
-# --- Testing / Coverage ---
+# --- Test & Coverage ---
 test-output/
 coverage/
 jacoco.exec
 surefire-reports/
 failsafe-reports/
+.gradle-test-kit/
 
-# --- Build outputs ---
-out/
+# --- Release / Build Outputs ---
 dist/
 release/
+out/
 build-output/
+installer/
+artifacts/
 
-# --- Local DB or cache files ---
-*.db
-*.mv.db
+# --- Local Databases or Cache ---
 *.h2.db
+*.mv.db
 *.trace.db
+*.data
+*.cache
+*.tmp
+*.bak
 
-# --- Custom (project-specific) ---
+# --- OS Temp files ---
+$RECYCLE.BIN/
+*.tmp
+*.temp
+
+# --- Node / Frontend Artifacts (if GUI uses any web UI resources) ---
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Custom Project Directories ---
 /xpathy-server-logs/
 /xpathy-cache/
 /xpathy-temp/
+/runtime/
+/generated/
+
+# --- JetBrains indexing ---
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf/
+.idea/**/httpRequests/
+
+# --- Miscellaneous ---
+*.bak
+*.old
+*.orig
+*.rej
+*.patch
