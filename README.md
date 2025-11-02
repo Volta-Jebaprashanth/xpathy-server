@@ -2,7 +2,7 @@
 
 ### A Local Server with GUI Launcher for XPathy Chrome Extension
 
-XPathy Server is a **Java-based Spring Boot application** with a **modern Swing GUI launcher**. It powers the [XPathy Chrome Extension](https://github.com/Volta-Jebaprashanth/xpathy-extension), which converts human-friendly **XPathy Java snippets** into standard **XPath expressions** and highlights elements directly in the browser.
+XPathy Server is a **Java-based Spring Boot application** with a **modern Swing GUI launcher**. It powers the [XPathy Chrome Extension](https://github.com/Volta-Jebaprashanth/xpathy-chrome-extension), which converts human-friendly **XPathy Java snippets** into standard **XPath expressions** and highlights elements directly in the browser.
 
 ---
 
