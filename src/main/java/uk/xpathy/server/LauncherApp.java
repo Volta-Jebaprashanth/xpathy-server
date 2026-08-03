@@ -1,4 +1,4 @@
-package com.xpathy;
+package uk.xpathy.server;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -7,7 +7,7 @@ import java.awt.datatransfer.*;
 import java.net.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import com.xpathy.application.demo.DemoApplication;
+import uk.xpathy.server.application.demo.DemoApplication;
 
 public class LauncherApp {
 

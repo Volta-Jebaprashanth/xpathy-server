@@ -1,4 +1,4 @@
-package com.xpathy.application.demo;
+package uk.xpathy.server.application.demo;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

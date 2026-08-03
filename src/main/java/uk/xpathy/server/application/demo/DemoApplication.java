@@ -1,4 +1,4 @@
-package com.xpathy.application.demo;
+package uk.xpathy.server.application.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

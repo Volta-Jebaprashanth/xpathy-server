@@ -1,4 +1,4 @@
-package com.xpathy.application.demo;
+package uk.xpathy.server.application.demo;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
