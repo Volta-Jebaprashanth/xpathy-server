@@ -1,24 +1,24 @@
-import com.xpathy.sourceCode.And;
+import com.xpathy.And;
 
-import static com.xpathy.sourceCode.Attribute.*;
+import static com.xpathy.Attribute.*;
 
-import static com.xpathy.sourceCode.Case.*;
+import static com.xpathy.Case.*;
 
-import static com.xpathy.sourceCode.Condition.*;
+import static com.xpathy.Condition.*;
 
-import static com.xpathy.sourceCode.Only.*;
+import static com.xpathy.Only.*;
 
-import com.xpathy.sourceCode.Or;
+import com.xpathy.Or;
 
-import static com.xpathy.sourceCode.Style.*;
+import static com.xpathy.Style.*;
 
-import static com.xpathy.sourceCode.Tag.*;
+import static com.xpathy.Tag.*;
 
-import com.xpathy.sourceCode.Text;
-import com.xpathy.sourceCode.XPathy;
+import com.xpathy.Text;
+import com.xpathy.XPathy;
 
 //overlapping
-import static com.xpathy.sourceCode.Attribute.title;
+import static com.xpathy.Attribute.title;
 
 public class TestXPathy {
 
