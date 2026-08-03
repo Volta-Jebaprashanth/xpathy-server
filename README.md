@@ -2,6 +2,9 @@
 
 ### A Local Server with GUI Launcher for XPathy Chrome Extension
 
+[![Build & Release](https://github.com/Volta-Jebaprashanth/xpathy-server/actions/workflows/build-release.yml/badge.svg)](https://github.com/Volta-Jebaprashanth/xpathy-server/actions/workflows/build-release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Volta-Jebaprashanth/xpathy-server)](https://github.com/Volta-Jebaprashanth/xpathy-server/releases/latest)
+
 XPathy Server is a **Java-based Spring Boot application** with a **modern Swing GUI launcher**. It powers the [XPathy Chrome Extension](https://github.com/Volta-Jebaprashanth/xpathy-chrome-extension), which converts human-friendly **XPathy Java snippets** into standard **XPath expressions** and highlights elements directly in the browser.
 
 ---
@@ -16,7 +19,9 @@ Once launched, the server listens on a configurable port (default: **5055**) and
 
 ## 📦 Download Latest Build
 
-### ➡️ [Download xpathy-server 3.0.0.jar](https://github.com/Volta-Jebaprashanth/xpathy-server/raw/main/releases/xpathy-server%203.0.0/xpathy-server%203.0.0.jar)
+### ➡️ [Download xpathy-server.jar (latest release)](https://github.com/Volta-Jebaprashanth/xpathy-server/releases/latest/download/xpathy-server.jar)
+
+See the [Releases page](https://github.com/Volta-Jebaprashanth/xpathy-server/releases/latest) for release notes and past versions.
 
 If you already have **Java 21 or above**, simply **double-click the JAR file** to open the GUI launcher.
 
@@ -212,6 +217,16 @@ target/xpathy-server.jar
 ### Logging
 
 Logs are stored in the `logs/` directory (ignored in `.gitignore`).
+
+### Continuous Integration & Releases
+
+Every push to `main` or a `release-*` branch (and every pull request) is built automatically via [GitHub Actions](.github/workflows/build-release.yml) using JDK 21:
+
+```bash
+mvn -B clean package
+```
+
+After a successful build on `main`, the workflow checks the version in `pom.xml`. If a GitHub Release for that version (tag `v<version>`) doesn't exist yet, it publishes a new release with `target/xpathy-server.jar` attached. If the version was already released, the workflow just builds — no duplicate release is created, so routine commits (docs, fixes) don't spam new releases. To ship a new version, bump `<version>` in `pom.xml` and merge to `main`.
 
 ---
 
