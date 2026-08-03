@@ -19,31 +19,31 @@ public class JavaSnippetRunner {
 
     // Wraps the user's expression into a class we can compile.
     private String wrapSource(String expression) {
-        // The expression must yield a com.xpathy.sourceCode.XPathy instance.
+        // The expression must yield a com.xpathy.XPathy instance.
         return """
             package %s;
-            import com.xpathy.sourceCode.And;
-            import com.xpathy.sourceCode.Attribute;
-            import static com.xpathy.sourceCode.Attribute.*;
-            import com.xpathy.sourceCode.Case;
-            import static com.xpathy.sourceCode.Case.*;
-            import com.xpathy.sourceCode.Condition;
-            import static com.xpathy.sourceCode.Condition.*;
-            import com.xpathy.sourceCode.Only;
-            import static com.xpathy.sourceCode.Only.*;
-            import com.xpathy.sourceCode.Or;
-            import com.xpathy.sourceCode.Style;
-            import static com.xpathy.sourceCode.Style.*;
-            import com.xpathy.sourceCode.Tag;
-            import static com.xpathy.sourceCode.Tag.*;
-            import com.xpathy.sourceCode.Text;
-            import com.xpathy.sourceCode.XPathy;
+            import com.xpathy.And;
+            import com.xpathy.Attribute;
+            import static com.xpathy.Attribute.*;
+            import com.xpathy.Case;
+            import static com.xpathy.Case.*;
+            import com.xpathy.Condition;
+            import static com.xpathy.Condition.*;
+            import com.xpathy.Only;
+            import static com.xpathy.Only.*;
+            import com.xpathy.Or;
+            import com.xpathy.Style;
+            import static com.xpathy.Style.*;
+            import com.xpathy.Tag;
+            import static com.xpathy.Tag.*;
+            import com.xpathy.Text;
+            import com.xpathy.XPathy;
 
             //overlapping
-            import static com.xpathy.sourceCode.Attribute.title;
-            import static com.xpathy.sourceCode.Attribute.style;
-            import static com.xpathy.sourceCode.Attribute.width;
-            import static com.xpathy.sourceCode.Attribute.height;
+            import static com.xpathy.Attribute.title;
+            import static com.xpathy.Attribute.style;
+            import static com.xpathy.Attribute.width;
+            import static com.xpathy.Attribute.height;
 
             public class %s {
                 public static String run() {
