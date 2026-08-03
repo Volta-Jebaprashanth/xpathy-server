@@ -336,12 +336,26 @@ public class LauncherApp {
         panel.add(Box.createVerticalStrut(8));
         panel.add(createURLPanel("http://" + localIP + ":" + port + "/execute?expression=id.contains(\"id-1\");", true));
 
+        panel.add(Box.createVerticalStrut(25));
+
+        // MCP (Model Context Protocol) section
+        panel.add(createSectionLabel("MCP Configuration"));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(createInfoText("Streamable HTTP endpoint for MCP-compatible clients:"));
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(createURLPanel("http://localhost:" + port + "/mcp"));
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(createInfoText("Add to your MCP client config (e.g. Claude Code, Cursor):"));
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(createCodeBlockPanel(buildMcpConfigSnippet(port)));
+
         panel.add(Box.createVerticalStrut(20));
 
         // Help text
         JTextArea helpText = new JTextArea(
             "💡 Tip: Replace {xpathy snippet} with your XPath expression. " +
-            "Make sure devices are on the same network and firewall allows connections on port " + port + "."
+            "Make sure devices are on the same network and firewall allows connections on port " + port + ". " +
+            "MCP clients that only support stdio (e.g. some Claude Desktop versions) will need a bridge such as mcp-remote pointed at the URL above."
         );
         helpText.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         helpText.setForeground(TEXT_SECONDARY);
@@ -377,6 +391,62 @@ public class LauncherApp {
         label.setForeground(TEXT_SECONDARY);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
+    }
+
+    // Build a ready-to-paste MCP client config snippet for the given port
+    private static String buildMcpConfigSnippet(String port) {
+        return """
+            {
+              "mcpServers": {
+                "xpathy": {
+                  "type": "http",
+                  "url": "http://localhost:%s/mcp"
+                }
+              }
+            }""".formatted(port);
+    }
+
+    // Create a multi-line code block panel with a copy button
+    private static JPanel createCodeBlockPanel(String code) {
+        JPanel codePanel = new JPanel(new BorderLayout(10, 0));
+        codePanel.setBackground(CODE_BG);
+        codePanel.setBorder(BorderFactory.createCompoundBorder(
+            new RoundedBorder(8, new Color(203, 213, 225)),
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+        codePanel.setMaximumSize(new Dimension(440, 160));
+
+        JTextArea codeText = new JTextArea(code);
+        codeText.setFont(new Font("Consolas", Font.PLAIN, 11));
+        codeText.setForeground(PRIMARY_COLOR);
+        codeText.setBackground(CODE_BG);
+        codeText.setLineWrap(false);
+        codeText.setEditable(false);
+
+        JButton copyButton = new JButton("📋 Copy");
+        copyButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        copyButton.setForeground(PRIMARY_COLOR);
+        copyButton.setBackground(PANEL_BG);
+        copyButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(PRIMARY_COLOR, 1),
+            BorderFactory.createEmptyBorder(5, 12, 5, 12)
+        ));
+        copyButton.setFocusPainted(false);
+        copyButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        copyButton.addActionListener(e -> {
+            StringSelection selection = new StringSelection(code);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+            copyButton.setText("✓ Copied!");
+            Timer timer = new Timer(2000, evt -> copyButton.setText("📋 Copy"));
+            timer.setRepeats(false);
+            timer.start();
+        });
+
+        codePanel.add(codeText, BorderLayout.CENTER);
+        codePanel.add(copyButton, BorderLayout.EAST);
+
+        return codePanel;
     }
 
     // Create URL panel with copy button
