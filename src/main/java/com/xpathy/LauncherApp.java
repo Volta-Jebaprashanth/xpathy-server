@@ -27,6 +27,11 @@ public class LauncherApp {
     private static final Color INFO_BG = new Color(239, 246, 255); // Light blue
     private static final Color CODE_BG = new Color(241, 245, 249); // Light gray
 
+    private static final int FRAME_WIDTH = 600;
+    private static final int FRAME_COLLAPSED_HEIGHT = 550;
+    private static final int FRAME_EXPANDED_HEIGHT = 700;
+    private static final String DEFAULT_PORT = "5055";
+
     public static void main(String[] args) {
         // Set system look and feel for better OS integration
         try {
@@ -40,17 +45,37 @@ public class LauncherApp {
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("XPathy Server Launcher");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 550);
+        frame.setSize(FRAME_WIDTH, FRAME_COLLAPSED_HEIGHT);
         frame.setResizable(true);
 
-        // Main panel with custom background
+        StatusIndicator status = createStatusIndicator();
+        PortInput portInput = createPortInput();
+        ButtonBar buttons = createButtonBar();
+
+        JPanel serverInfoPanel = createServerInfoPanel();
+        serverInfoPanel.setVisible(false);
+        serverInfoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel contentPanel = createContentPanel(status.panel(), portInput.panel(), buttons.panel());
+        JScrollPane scrollPane = createScrollPane(contentPanel, serverInfoPanel);
+        frame.setContentPane(createMainPanel(scrollPane));
+
+        wireStartButton(frame, buttons, portInput.field(), status, serverInfoPanel);
+        wireStopButton(frame, buttons, portInput.field(), status, serverInfoPanel);
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    // ---- Top-level layout ----
+
+    private static JPanel createMainPanel(JScrollPane scrollPane) {
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                // Gradient background
                 GradientPaint gp = new GradientPaint(0, 0, BACKGROUND, 0, getHeight(), new Color(226, 232, 240));
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -58,12 +83,34 @@ public class LauncherApp {
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        // Scrollable container
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        mainPanel.add(scrollPane, gbc);
+        return mainPanel;
+    }
+
+    private static JScrollPane createScrollPane(JPanel contentPanel, JPanel serverInfoPanel) {
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
         containerPanel.setBackground(new Color(0, 0, 0, 0));
+        containerPanel.add(Box.createVerticalStrut(20));
+        containerPanel.add(contentPanel);
+        containerPanel.add(Box.createVerticalStrut(20));
+        containerPanel.add(serverInfoPanel);
+        containerPanel.add(Box.createVerticalStrut(20));
 
-        // Content panel with rounded borders
+        JScrollPane scrollPane = new JScrollPane(containerPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        return scrollPane;
+    }
+
+    private static JPanel createContentPanel(JPanel statusPanel, JPanel portPanel, JPanel buttonPanel) {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(PANEL_BG);
@@ -73,19 +120,33 @@ public class LauncherApp {
         ));
         contentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Title label
         JLabel titleLabel = new JLabel("XPathy Server");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(TEXT_PRIMARY);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Subtitle
         JLabel subtitleLabel = new JLabel("Configure and launch your server");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(TEXT_SECONDARY);
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Status indicator
+        contentPanel.add(titleLabel);
+        contentPanel.add(Box.createVerticalStrut(5));
+        contentPanel.add(subtitleLabel);
+        contentPanel.add(Box.createVerticalStrut(25));
+        contentPanel.add(statusPanel);
+        contentPanel.add(Box.createVerticalStrut(25));
+        contentPanel.add(portPanel);
+        contentPanel.add(Box.createVerticalStrut(25));
+        contentPanel.add(buttonPanel);
+        return contentPanel;
+    }
+
+    // ---- Component builders ----
+
+    private record StatusIndicator(JPanel panel, JLabel dot, JLabel label) {}
+
+    private static StatusIndicator createStatusIndicator() {
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         statusPanel.setBackground(PANEL_BG);
         statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -100,8 +161,12 @@ public class LauncherApp {
 
         statusPanel.add(statusDot);
         statusPanel.add(statusLabel);
+        return new StatusIndicator(statusPanel, statusDot, statusLabel);
+    }
 
-        // Port input section
+    private record PortInput(JPanel panel, JTextField field) {}
+
+    private static PortInput createPortInput() {
         JPanel portPanel = new JPanel();
         portPanel.setLayout(new BoxLayout(portPanel, BoxLayout.Y_AXIS));
         portPanel.setBackground(PANEL_BG);
@@ -112,7 +177,7 @@ public class LauncherApp {
         portLabel.setForeground(TEXT_PRIMARY);
         portLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JTextField portField = new JTextField("5055");
+        JTextField portField = new JTextField(DEFAULT_PORT);
         portField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         portField.setHorizontalAlignment(JTextField.CENTER);
         portField.setMaximumSize(new Dimension(200, 40));
@@ -125,8 +190,12 @@ public class LauncherApp {
         portPanel.add(portLabel);
         portPanel.add(Box.createVerticalStrut(8));
         portPanel.add(portField);
+        return new PortInput(portPanel, portField);
+    }
 
-        // Buttons panel
+    private record ButtonBar(JPanel panel, JButton start, JButton stop) {}
+
+    private static ButtonBar createButtonBar() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.setBackground(PANEL_BG);
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -137,127 +206,80 @@ public class LauncherApp {
 
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
+        return new ButtonBar(buttonPanel, startButton, stopButton);
+    }
 
-        // Server info panel (initially hidden)
-        JPanel serverInfoPanel = createServerInfoPanel("8080");
-        serverInfoPanel.setVisible(false);
-        serverInfoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // ---- Event wiring ----
 
-        // Add all components to content panel
-        contentPanel.add(titleLabel);
-        contentPanel.add(Box.createVerticalStrut(5));
-        contentPanel.add(subtitleLabel);
-        contentPanel.add(Box.createVerticalStrut(25));
-        contentPanel.add(statusPanel);
-        contentPanel.add(Box.createVerticalStrut(25));
-        contentPanel.add(portPanel);
-        contentPanel.add(Box.createVerticalStrut(25));
-        contentPanel.add(buttonPanel);
-
-        // Add content panel to container
-        containerPanel.add(Box.createVerticalStrut(20));
-        containerPanel.add(contentPanel);
-        containerPanel.add(Box.createVerticalStrut(20));
-        containerPanel.add(serverInfoPanel);
-        containerPanel.add(Box.createVerticalStrut(20));
-
-        // Add container to scroll pane
-        JScrollPane scrollPane = new JScrollPane(containerPanel);
-        scrollPane.setBorder(null);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Add scroll pane to main panel
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(scrollPane, gbc);
-
-        frame.setContentPane(mainPanel);
-
-        // Start button action
-        startButton.addActionListener(e -> {
+    private static void wireStartButton(JFrame frame, ButtonBar buttons, JTextField portField,
+                                         StatusIndicator status, JPanel serverInfoPanel) {
+        buttons.start().addActionListener(e -> {
             String port = portField.getText().trim();
             if (!port.matches("\\d{2,5}")) {
                 showStyledDialog(frame, "Invalid port number! Please enter a valid port (2-5 digits).", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            startButton.setEnabled(false);
-            stopButton.setEnabled(true);
+            buttons.start().setEnabled(false);
+            buttons.stop().setEnabled(true);
             portField.setEnabled(false);
 
-            // Update status
-            statusDot.setForeground(SUCCESS_COLOR);
-            statusLabel.setText("Server Running on port " + port);
-            statusLabel.setForeground(SUCCESS_COLOR);
+            status.dot().setForeground(SUCCESS_COLOR);
+            status.label().setText("Server Running on port " + port);
+            status.label().setForeground(SUCCESS_COLOR);
 
             springThread = new Thread(() -> {
                 SpringApplication app = new SpringApplication(DemoApplication.class);
                 springContext = app.run("--server.port=" + port);
             });
-
             springThread.setDaemon(false);
             springThread.start();
 
-            // Update and show server info panel
             updateServerInfoPanel(serverInfoPanel, port);
             serverInfoPanel.setVisible(true);
 
-            // Resize window if needed
-            frame.setSize(600, 700);
+            frame.setSize(FRAME_WIDTH, FRAME_EXPANDED_HEIGHT);
 
-            // Scroll to show the info panel
-            SwingUtilities.invokeLater(() -> {
-                serverInfoPanel.scrollRectToVisible(serverInfoPanel.getBounds());
-            });
+            SwingUtilities.invokeLater(() -> serverInfoPanel.scrollRectToVisible(serverInfoPanel.getBounds()));
 
             showStyledDialog(frame, "Server started successfully on port " + port, "Success", JOptionPane.INFORMATION_MESSAGE);
         });
+    }
 
-        // Stop button action
-        stopButton.addActionListener(e -> {
+    private static void wireStopButton(JFrame frame, ButtonBar buttons, JTextField portField,
+                                        StatusIndicator status, JPanel serverInfoPanel) {
+        buttons.stop().addActionListener(e -> {
             int confirm = showStyledConfirmDialog(frame, "Are you sure you want to stop the server?", "Confirm Stop");
-            if (confirm == JOptionPane.YES_OPTION) {
-                // Stop the Spring Boot server gracefully
-                if (springContext != null) {
-                    springContext.close();
-                    springContext = null;
-                }
-
-                if (springThread != null && springThread.isAlive()) {
-                    springThread.interrupt();
-                }
-
-                // Reset UI state
-                startButton.setEnabled(true);
-                stopButton.setEnabled(false);
-                portField.setEnabled(true);
-
-                // Update status
-                statusDot.setForeground(TEXT_SECONDARY);
-                statusLabel.setText("Server Offline");
-                statusLabel.setForeground(TEXT_SECONDARY);
-
-                // Hide server info panel
-                serverInfoPanel.setVisible(false);
-
-                // Resize window back to original size
-                frame.setSize(600, 550);
-
-                showStyledDialog(frame, "Server stopped successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
             }
-        });
 
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+            // Stop the Spring Boot server gracefully
+            if (springContext != null) {
+                springContext.close();
+                springContext = null;
+            }
+            if (springThread != null && springThread.isAlive()) {
+                springThread.interrupt();
+            }
+
+            buttons.start().setEnabled(true);
+            buttons.stop().setEnabled(false);
+            portField.setEnabled(true);
+
+            status.dot().setForeground(TEXT_SECONDARY);
+            status.label().setText("Server Offline");
+            status.label().setForeground(TEXT_SECONDARY);
+
+            serverInfoPanel.setVisible(false);
+            frame.setSize(FRAME_WIDTH, FRAME_COLLAPSED_HEIGHT);
+
+            showStyledDialog(frame, "Server stopped successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     // Create server info panel with access URLs
-    private static JPanel createServerInfoPanel(String port) {
+    private static JPanel createServerInfoPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(PANEL_BG);
@@ -478,8 +500,8 @@ public class LauncherApp {
 
     // Custom rounded border
     static class RoundedBorder extends AbstractBorder {
-        private int radius;
-        private Color color;
+        private final int radius;
+        private final Color color;
 
         RoundedBorder(int radius, Color color) {
             this.radius = radius;
@@ -517,4 +539,3 @@ public class LauncherApp {
         return JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION);
     }
 }
-

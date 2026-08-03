@@ -1,5 +1,8 @@
 package com.xpathy.application.demo;
 
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Service;
+
 import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+@Service
 public class JavaSnippetRunner {
 
     static final String PKG = "sandbox";
@@ -270,56 +274,9 @@ public class JavaSnippetRunner {
     }
 
 
-    /** Very basic restricted loader (use containers/VMs for real safety) */
-    static class RestrictedClassLoader extends ClassLoader {
-        private final Map<String, byte[]> defs;
-        private static final Set<String> ALLOW_PREFIX = Set.of(
-                "sandbox.",                 // the generated code
-                "com.xpathy.",             // your library
-                "java.lang.",              // minimal core
-                "java.util."               // collections used by reflection
-        );
-        private static final Set<String> DENY_PREFIX = Set.of(
-                "java.io.", "java.nio.", "java.net.", "java.lang.reflect.Proxy",
-                "javax.script.", "java.lang.Process", "java.lang.Runtime",
-                "java.lang.System", "java.security.", "sun.", "jdk."
-        );
-
-        RestrictedClassLoader(Map<String, byte[]> defs) {
-            super(RestrictedClassLoader.class.getClassLoader());
-            this.defs = defs;
-        }
-
-        @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
-            byte[] b = defs.get(name);
-            if (b != null) return defineClass(name, b, 0, b.length);
-            return super.findClass(name);
-        }
-
-        @Override
-        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            if (isDenied(name)) throw new SecurityException("Access denied to " + name);
-            if (isAllowed(name) && defs.containsKey(name)) {
-                Class<?> c = findClass(name);
-                if (resolve) resolveClass(c);
-                return c;
-            }
-            return super.loadClass(name, resolve);
-        }
-
-        private boolean isAllowed(String name) {
-            for (String p : ALLOW_PREFIX) if (name.startsWith(p)) return true;
-            return false;
-        }
-        private boolean isDenied(String name) {
-            for (String p : DENY_PREFIX) if (name.startsWith(p)) return true;
-            return false;
-        }
-    }
-
+    @PreDestroy
     public void shutdown() {
-        pool.shutdownNow(); // ✅ kill threads immediately
+        pool.shutdownNow();
     }
 
 }
